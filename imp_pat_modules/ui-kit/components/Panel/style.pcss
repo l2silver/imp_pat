@@ -1,0 +1,30 @@
+/* styles.css */
+.container {
+    display: inline-block;
+    position: relative;
+    width: 20%;
+    margin-right: 0;
+    float: right;
+    transition: all 0.5s;
+    opacity: 1;
+}
+
+.closePanel {
+	font-weight: 100;
+	color: #b5cccc;
+	font-size: 2rem;
+	position: absolute;
+    right: 0;
+    margin: 20px;
+    transition: color 0.33s;
+    cursor: pointer;
+}
+
+.closePanel:hover {
+	color: #865959;
+}
+
+.container.closed {
+    margin-right: -25%;
+    opacity: 0;
+}

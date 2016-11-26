@@ -1,39 +1,29 @@
+//@flow
 import React, { Component } from 'react';
-import { NICE, SUPER_NICE } from './colors';
+import {Map} from 'immutable';
+import {Button} from '@imp_pat/ui-kit/components';
+import {Route, Router, browserHistory} from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux'
+import store from './configureStore';
+import {Provider} from 'react-redux';
+import Container from './MainContainer';
+import allRoutes from './routes';
 
-class Counter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { counter: 0 };
-    this.interval = setInterval(() => this.tick(), 1000);
-  }
 
-  tick() {
-    this.setState({
-      counter: this.state.counter + this.props.increment
-    });
-  }
+const history = syncHistoryWithStore(browserHistory, store)
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    return (
-      <h1 style={{ color: this.props.color }}>
-        Counter ({this.props.increment}): {this.state.counter}
-      </h1>
-    );
-  }
-}
+const routes = <Route path="/" component={Container}>
+  {allRoutes}
+</Route>
 
 export class App extends Component {
   render() {
     return (
-      <div>
-        <Counter increment={1} color={NICE} />
-        <Counter increment={5} color={SUPER_NICE} />
-      </div>
+    	<Provider store={store}>
+    		<Router history={history}>
+    			{routes}
+ 			  </Router>
+    	</Provider>
     );
   }
 }

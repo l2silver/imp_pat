@@ -1,0 +1,6 @@
+[libs]
+flow-typed
+[options]
+module.name_mapper='^@imp_pat/ui-kit' -> 'ui-kit'
+module.system.node.resolve_dirname=node_modules
+module.system.node.resolve_dirname=imp_pat_modules
