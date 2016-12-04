@@ -1,14 +1,20 @@
 //@flow
-import React, {Component} from 'react'
-import {Button, Container, MainNav, Panel, MainNavItem, MainNavDropdown, MainNavDropdownItem} from '@imp_pat/ui-kit/components'
+import React from 'react'
+import {Container, MainNav, MainNavItem, MainNavDropdown, MainNavDropdownItem, BaseRest} from '@imp_pat/ui-kit/components'
 import {connect} from 'react-redux';
+
 import {queryPush} from '@imp_pat/ui-kit/utils/routerUtils'
+import {indexInteractionMessage} from '@imp_pat/ui-kit/utils/interactionUtils'
+import {bindMethods} from '@imp_pat/ui-kit/utils/classUtils';
+
 import PanelContainer from '../PanelContainer';
 import {create as createPublication} from '../Publications/actions';
-import {Link} from 'react-router'
 
-
-class MainContainer extends Component {
+class MainContainer extends BaseRest {
+	constructor(props, context){
+		super(props, context);
+		bindMethods(this, 'baseRestMessages')
+	}
 	render(){
 		const {onSignup, onCreatePublication} = this.props;
 		return <Container>
@@ -29,6 +35,9 @@ class MainContainer extends Component {
 				<PanelContainer />
 			</Container>
 		</Container>
+	}
+	baseRestMessages(){
+		return [indexInteractionMessage()];
 	}
 }
 

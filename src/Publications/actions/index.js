@@ -7,7 +7,8 @@ export function create(){
 			dispatch,
 			[createMessage('publications', {})]
 		)
-		.then(({id})=>{
+		.then((response)=>{
+			const [[{entity: {id}}]] = response;
 			dispatch(locationPush(`/publications/${id}/edit`))
 		})
 	}

@@ -3,11 +3,50 @@ import {Map} from 'immutable';
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
+import {generateMessage, sendMessages} from './messageUtils';
+import {baseRestConstants} from './constantUtils';
 
-const INTERACTION = 'interaction';
+const {GET, CREATE, INDEX} = baseRestConstants;
+export const INTERACTION = 'interaction';
+
+
+export function generateInteractionMessage(restType: string, entity: *, options: * = {}){
+	return generateMessage(INTERACTION, restType, 'interactions', entity, options);
+}
+
+export function getInteractionMessage(entity: Object){
+	return generateInteractionMessage(GET, entity)
+}
+
+export function createInteractionMessage(entity: Object){
+	return generateInteractionMessage(CREATE, entity)
+}
+
+export function indexInteractionMessage(){
+	return generateInteractionMessage(INDEX, [])
+}
+
+function createInteractionActionHandler(state, action){
+	const {location, identity, value} = action.entity;
+	return state.mergeIn([location, `${identity}`], value);
+}
+
+function indexInteractionActionHandler(state, action){
+	const interactions = action.entity;
+	return interactions.reduce((state, {location, identity, value})=>{
+		return state.mergeIn([location], {[`${identity}`]: value});
+	}, state);
+}
 
 function interactionActionHandler(state: *, action: *){
-	return state.mergeIn([action.location, action.identity], action.interactions);
+	switch(action.restType){
+	case CREATE:
+		return createInteractionActionHandler(state, action);
+	case INDEX:
+		return indexInteractionActionHandler(state, action);
+	default:
+		return state;	
+	}	
 }
 
 export function interactionReducer(state: Map<string, any> = new Map(), action: *){
@@ -19,16 +58,7 @@ export function interactionReducer(state: Map<string, any> = new Map(), action: 
 	}
 }
 
-function interactionGenerator(location: string, identity: string, interactions: Object) {
-	return {
-		type: INTERACTION,
-		location,
-		identity,
-		interactions,
-	}
-}
-
-export function interact(location: string, defaultValues?: Object){
+export function interactivate(location: string, defaultValues?: Object){
 	return (WrappedComponent: any) => {	
 		const mapStateToProps = createSelector(
 			[
@@ -40,10 +70,10 @@ export function interact(location: string, defaultValues?: Object){
 			}
 		);
 
-		function mapDispatchToProps(dispatch, {interactionIdentity}){
+		function mapDispatchToProps(dispatch, {interactionIdentity: identity}){
 			return {
-				interact(interactions){
-					dispatch(interactionGenerator(location, interactionIdentity, interactions))
+				interact(value){
+					sendMessages(dispatch, [createInteractionMessage({location, identity, value})])
 				}
 			};
 		}
@@ -57,7 +87,3 @@ export function interact(location: string, defaultValues?: Object){
 		);
 	}
 }
-
-
-
-

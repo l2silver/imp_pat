@@ -1,7 +1,7 @@
 //@flow
 import React, { Component } from 'react';
 import {Map} from 'immutable';
-import {Button} from '@imp_pat/ui-kit/components';
+import {Button, BaseRestProvider} from '@imp_pat/ui-kit/components';
 import {Route, Router, browserHistory} from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux'
 import store from './configureStore';
@@ -19,11 +19,15 @@ const routes = <Route path="/" component={Container}>
 export class App extends Component {
   render() {
     return (
-    	<Provider store={store}>
-    		<Router history={history}>
-    			{routes}
- 			  </Router>
-    	</Provider>
+    	
+	    <Provider store={store}>
+	    	<BaseRestProvider dispatch={store.dispatch}>
+	    		<Router history={history}>
+	    			{routes}
+	 			  </Router>
+	 		</BaseRestProvider>
+	    </Provider>
+	    
     );
   }
 }

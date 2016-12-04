@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var rucksack = require('rucksack-css');
 module.exports = {
   // or devtool: 'eval' to debug issues with compiled output:
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval',
   entry: [
     // necessary for hot reloading with IE:
     'eventsource-polyfill',

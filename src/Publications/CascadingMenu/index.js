@@ -1,85 +1,52 @@
 //@flow
 import React, {PureComponent} from 'react';
-import {Map, List} from 'immutable';
 import {connect} from 'react-redux';
 import {createSelector, createStructuredSelector} from 'reselect';
-import {Icon} from '@imp_pat/ui-kit/components';
-import {interact} from '@imp_pat/ui-kit/utils/interactionUtils';
 import {getIdParam} from '@imp_pat/ui-kit/utils/routerUtils';
+import {getRelatedEntityIds, findEntity} from '@imp_pat/ui-kit/utils/selectorUtils';
+import {interactivate} from '@imp_pat/ui-kit/utils/interactionUtils';
+import {create as createFolder, createSection} from './Folder/actions';
 import CascadingMenuFolder from './Folder';
-import CascadingMenuSection from './Section';
-import {container, caret} from './style.pcss';
+import {container} from './style.pcss';
 
 class CascadingMenu extends PureComponent {
-	constructor(props){
-		super(props);
-	}
 	render(){
-		const {publication, folders, sections, interactions, interact} = this.props;
-		const open = interactions.get('open');
+		const {publication, folderId, folders, sections, interactions, interact, dispatch} = this.props;
 		return <ul className={container}>	
-			<li>
-				<div>{publication.get('name')}<Icon onClick={()=>interact({open: !open})} className={caret} name={`caret-${open ? 'down' : 'up'}`} /></div>
-				<ul className={container}>
-					{
-						folders.map(folder=><CascadingMenuFolder folderId={folder.id} />)
-					}
-					{
-						sections.map(section=><CascadingMenuSection sectionId={section.id} />)
-					}
-				</ul>
-				<div>
-					<div><Icon name='plus' /></div>
-					<div></div>
-				</div>
-			</li>
+			<CascadingMenuFolder
+				folder={publication}
+				folders={folders}
+				sections={sections}
+				interactions={interactions}
+				interact={interact}
+				createFolder={()=>dispatch(createFolder(folderId))}
+				createSection={()=>dispatch(createSection(folderId))}
+			/>
 		</ul>
 	}
 }
 
-const getPublicationId = getIdParam;
-
-const publication = createSelector(
-	[
-		getPublicationId,
-		(state, props)=>{},
+const prePublication = findEntity(getIdParam, 'publications');
+const publication = createSelector([
+		prePublication
 	],
-	(publicationId, publications)=>{
-		return new Map({name: 'First Publication'});
-		return publications.get(`${publicationId}`);
-	}
-)
-
-const folders = createSelector(
-	[
-		getPublicationId,
-		(state, props)=>{},
-		(state, props)=>{},
-	],
-	(publicationId, foldersByPublication, folders)=>{
-		return new List();
-		return foldersByPublication.get(`${publicationId}`).map(id=>folders.get(`${id}`));
-	}
-)
-
-const sections = createSelector(
-	[
-		getPublicationId,
-		(state, props)=>{},
-		(state, props)=>{},
-	],
-	(publicationId, sectionsByPublication, sections)=>{
-		return new List();
-		return sectionsByPublication.get(`${publicationId}`).map(id=>sections.get(`${id}`));
-	}
-)
+	(publication)=>publication.set('name', publication.get('title'))
+);
+const folderId = getRelatedEntityIds(getIdParam, 'publications', 'folder');
+const folder = findEntity(folderId, 'folders');
+const folders = getRelatedEntityIds(folderId, 'folders', 'folders');
+const sections = getRelatedEntityIds(folderId, 'folders', 'sections');
 
 const mapStateToProps = createStructuredSelector({
 	publication,
+	folder,
 	folders,
 	sections,
-	interactionIdentity: getPublicationId,
+	folderId,
+	interactionIdentity: folderId,
 });
 
-const InteractiveCascadingMenu = interact('CascadingMenu', {open: true})(CascadingMenu)
+
+const InteractiveCascadingMenu = interactivate('CascadingMenuFolder', {open: true})(CascadingMenu)
+
 export default connect(mapStateToProps)(InteractiveCascadingMenu);

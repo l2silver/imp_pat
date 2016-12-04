@@ -19,6 +19,9 @@ export class BaseRestProvider extends Component {
 		this.dispatch = props.dispatch;
 		bindMethods(this, 'getMessages', 'sendAndRefreshMessages');
 	}
+	render(){
+		return this.props.children;
+	}
 	getChildContext() {
 		const {getMessages} = this;
 		return {
@@ -31,13 +34,13 @@ export class BaseRestProvider extends Component {
 		newMessages.forEach(message=>{
 			const stringMessage = JSON.stringify(message);
 			const lastTime = messageCopies[stringMessage];
-			if(!lastTime && lastTime - currentTime > 5000){
+			if(!lastTime || lastTime - currentTime > 5000){
 				messageCopies[stringMessage] = currentTime;
 				messages.push(message);
 			}
 		});
 	}
-	componentWillMount(){
+	componentDidMount(){
 		this.sendAndRefreshMessages()
 	}
 	componentWillUpdate(){

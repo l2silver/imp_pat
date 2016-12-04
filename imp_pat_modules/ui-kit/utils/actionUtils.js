@@ -1,8 +1,11 @@
 //@flow
-import {baseRestConstants} from './constantUtils';
 import {Map, fromJS, List} from 'immutable';
+import {baseRestConstants} from './constantUtils';
+import {fullSchema, schemaTypes} from './schemaUtils';
 
-const {BASE_REST, CREATE, UPDATE, DELETE, LINK, UNLINK, REORDER} = baseRestConstants;
+const {BASE_REST, GET, INDEX, CREATE, UPDATE, DELETE, LINK, UNLINK, REORDER} = baseRestConstants;
+
+import type {$relationship} from './messageUtils';
 
 export function actionGenerator(type: string, restType: string, name: string) {
 	return (payload: *)=>{
@@ -28,7 +31,10 @@ export function createAction(name: string, entity: any){
 	return actionGenerator(BASE_REST, CREATE, name)({name, entity});
 }
 
-export function baseRestActionHandlers(state: * = new Map(), action: *){
+export function baseRestActionHandlers(state: * = new Map({
+	entities: new Map(),
+	relationships: new Map(),
+}), action: *){
 	return baseCustomActionHandlers(
 		baseSubactionHandlers(
 			baseActionHandlers(
@@ -72,6 +78,8 @@ function restActionHandlers(state, action){
 	switch(action.restType){
 	case CREATE:
 		return createActionHandler(state, action);
+	case GET:
+		return createActionHandler(state, action);
 	case DELETE:
 		return deleteActionHandler(state, action);
 	case UPDATE:
@@ -100,6 +108,56 @@ function restSubactionHandlers(state, action){
 
 const customActionHandlers = {};
 
+function cleanEntity(name, entity, fullSchema, entities, relationships) {
+	const schema = fullSchema[name];
+	if(!schema){
+		throw new TypeError(`schema missing ${name}`);
+	}
+	const nextEntities = {};
+	schema.forEach(({name: nextName, alias, type})=>{
+		const finalName = alias || nextName;
+		const relatedEntities = entity[finalName];
+		if(!relatedEntities){
+			return nextEntities;
+		};
+		nextEntities[nextName] = relatedEntities;
+		if(!relationships[name]){
+			relationships[name] = {};
+		}
+		
+		const relatedEntityIds = type === schemaTypes.ONE ? relatedEntities.id : relatedEntities.map(({id})=>id);
+		if(!relationships[name][finalName]){
+			relationships[name][finalName] = {};
+		}
+		relationships[name][finalName][entity.id] = relatedEntityIds;
+		delete entity[finalName];
+	})
+	if(!entities[name]){
+		entities[name] = {};
+	}
+	entities[name][entity.id] = entity;
+	return nextEntities;
+}
+
+export function baseRestParseResponse(name: string, entity: Object, fullSchema: Object, entities: Object={}, relationships: Object={}){
+	const nextEntities = cleanEntity(name, entity, fullSchema, entities, relationships);
+	Object.keys(nextEntities).forEach((nextName)=>{
+		Array.isArray(nextEntities[nextName]) ? 
+			nextEntities[nextName].forEach((nextEntity)=>{
+				baseRestParseResponse(nextName, nextEntity, fullSchema, entities, relationships);
+			})
+		:
+			baseRestParseResponse(nextName, nextEntities[nextName], fullSchema, entities, relationships);
+	})
+}
+
+export function baseRestParseResponseWrapper(name: string, entity: Object, fullSchema: Object){
+	const relationships = {};
+	const entities = {};
+	baseRestParseResponse(name, entity, fullSchema, entities, relationships);
+	return {relationships, entities};
+}
+
 export function setCustomActionHandlers(newCustomActionHandlers: Object){
 	Object.keys(newCustomActionHandlers).forEach(key=>{
 		customActionHandlers[key] = newCustomActionHandlers[key];
@@ -113,14 +171,8 @@ function restCustomActionHandlers(state, action){
 
 function createActionHandler(state, action){
 	const {name, entity} = action;
-	return state.setIn(
-		[
-			'entities',
-			name,
-			`${entity.id}`
-		],
-		fromJS(entity)
-	);
+	const entitiesAndRelationships = baseRestParseResponseWrapper(name, entity, fullSchema);
+	return state.mergeDeep(entitiesAndRelationships);
 }
 
 function deleteActionHandler(state, action){
@@ -146,20 +198,41 @@ function updateActionHandler(state, action){
 	);
 }
 
-function linkActionHandler(state, action){
-	const {name, entity} = action;
+function linkActionHandler(
+	state,
+	action: {
+		name: string;
+		entity: {
+			id: number;
+		};
+		relationship: $relationship;
+	}
+){
+	const {
+		name,
+		entity: {
+			id
+		},
+		relationship: {
+			parentName,
+			alias,
+			parentId
+		}
+	} = action;
 	return state.updateIn(
 		[
 			'relationships',
-			entity.parentName,
-			name,
-			`${entity.parentId}`,
+			parentName,
+			alias || name,
+			`${parentId}`,
 		],
 		(childIds)=>{
 			if(childIds){
-				return childIds.add(entity.id)
+				return childIds.push(
+					id
+				);
 			}
-			return new List([entity.id]);
+			return new List([id]);
 		}
 	);
 }
