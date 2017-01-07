@@ -1,5 +1,5 @@
 {
-  "presets": ["react", "es2015", "stage-0"],
+  "presets": ["react", "es2015", "stage-0", "stage-1"],
   "plugins": [
   	["module-alias", [
       { "src": "./imp_pat_modules/ui-kit", "expose": "@imp_pat/ui-kit" },

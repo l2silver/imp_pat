@@ -1,5 +1,5 @@
 //@flow
-import {Map} from 'immutable';
+import {Map, fromJS} from 'immutable';
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {createSelector} from 'reselect';
@@ -33,8 +33,8 @@ function createInteractionActionHandler(state, action){
 
 function indexInteractionActionHandler(state, action){
 	const interactions = action.entity;
-	return interactions.reduce((state, {location, identity, value})=>{
-		return state.mergeIn([location], {[`${identity}`]: value});
+	return interactions.reduce((state, {location, identity, name, value})=>{
+		return state.setIn([location, `${identity}`, name], fromJS(value));
 	}, state);
 }
 

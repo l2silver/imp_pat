@@ -1,5 +1,6 @@
 //@flow
-import React, {Component, PropTypes} from 'react';
+import {Component, PropTypes} from 'react';
+
 import {bindMethods} from '../../utils/classUtils';
 import {sendMessages} from '../../utils/messageUtils';
 import type {$Message} from '../../utils/messageUtils';
@@ -11,6 +12,8 @@ export class BaseRestProvider extends Component {
 	dispatch: Function;
 	static childContextTypes = {
 		getMessages: PropTypes.func,
+		forceRefresh: PropTypes.func,
+		parent: PropTypes.any,
 	};
 	constructor(props: Object){
 		super(props);
@@ -23,9 +26,11 @@ export class BaseRestProvider extends Component {
 		return this.props.children;
 	}
 	getChildContext() {
-		const {getMessages} = this;
+		const {getMessages, forceRefresh} = this;
 		return {
 			getMessages,
+			forceRefresh,
+			parent: this,
 		};
 	}
 	getMessages(newMessages: $Message[]){
@@ -46,11 +51,14 @@ export class BaseRestProvider extends Component {
 	componentWillUpdate(){
 		this.sendAndRefreshMessages()
 	}
+	forceRefresh(){
+		this.forceUpdate();
+	}
 	sendAndRefreshMessages(){
-		let {messages, dispatch} = this;
-		if(messages.length > 0){
-			sendMessages(dispatch, messages.slice(0))
-			messages = [];	
+		let {dispatch} = this;
+		if(this.messages.length > 0){
+			sendMessages(dispatch, this.messages.slice(0))
+			this.messages = [];	
 		}
 	}
 }

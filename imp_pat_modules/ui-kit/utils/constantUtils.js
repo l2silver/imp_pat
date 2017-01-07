@@ -3,7 +3,7 @@ export const baseRestConstants = {
 	BASE_REST: 'baseRest', 
 	CREATE:    'create',
 	UPDATE:    'update', 
-	DELETE:    'delete',
+	DELETE:    'remove',
 	INDEX: 	   'index',
 	GET: 	   'get',
 	LINK: 	   'link',

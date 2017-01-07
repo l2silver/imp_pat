@@ -1,5 +1,5 @@
-//@flow
-import React, {PureComponent, PropTypes} from 'react';
+// @flow
+import React, {PureComponent} from 'react';
 import {Map, List} from 'immutable';
 import titleCaseUtil from 'title-case';
 import {bindMethods} from '../../utils/classUtils';
@@ -36,16 +36,16 @@ function genFieldFromString(key) : $Exact<$fieldProperties> {
 	}
 }
 
-function genFieldConfig(fields, key){
+function genFieldConfig(fields, key, initialValue){
 	const field = fields[key];
 	if(typeof field !== 'object'){
 		return genFieldFromString(key);
 	}
-	return {...genFieldFromString(key), ...field};
+	return {...genFieldFromString(key), ...field, value: initialValue};
 }
 
 export function form({fields, actions, onChange, config}: *, WrappedComponent: *){
-	return class Form extends React.PureComponent {
+	return class Form extends PureComponent {
 		state: {
 			fields: Map<
 				string,
@@ -69,7 +69,7 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 					return allFields.set(
 						key,
 						new Map(
-							genFieldConfig(fields, key)
+							genFieldConfig(fields, key, props[key])
 						).set(
 							'onChange',
 							onChangeCB ? (fieldNameValueObject)=>this.onChange(onChangeCB, fieldNameValueObject) 
@@ -94,7 +94,7 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 			};
 		}
 		render(){
-			return <WrappedComponent fields={this.state.fields} actions={this.actions}/>
+			return <WrappedComponent fields={this.state.fields} actions={this.actions} isValid={this.state.isValid}/>
 		}
 		getField(fieldName: string){
 			return this.state.fields.get(fieldName);
@@ -116,8 +116,15 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 					isValid: errors.size === 0,
 				})
 			);
+			const isValid = fields.toKeyedSeq().reduce((valid, field)=>{
+				if(valid){
+					return field.get('isValid');
+				}
+				return valid;
+			}, true);
 			return {
 				fields,
+				isValid,
 			}
 		}
 		onChange(updateCallback: ()=>Promise<any>, {name, value}: {name: string; value: *}){
@@ -142,9 +149,13 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 		}
 
 		handleErrors(errors: Object){
+			console.log('errors', errors);
 			const nextFields = Object.keys(errors).reduce((fields, key)=>{
 				return fields.updateIn([key, 'errors'], (errorsList)=>{
-					return errorsList.concat(errors[key]);
+					if(errorsList){
+						return errorsList.concat(errors[key]);	
+					}
+					return new List();
 				})
 				.setIn([key, 'isValid'], false);
 			}, this.state.fields);

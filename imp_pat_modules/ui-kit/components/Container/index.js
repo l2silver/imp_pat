@@ -9,7 +9,8 @@ class Container extends PureComponent {
 			{
 				[sidebar]: this.props.sidebar,
 				[mainContent]: this.props.mainContent,
-				[menubar]: this.props.menubar
+				[menubar]: this.props.menubar,
+				[this.props.className]: this.props.className
 			}
 		);
 		return <div className={klass}>

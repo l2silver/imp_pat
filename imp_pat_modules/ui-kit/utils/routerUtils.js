@@ -1,19 +1,31 @@
 //@flow
 import {createSelector} from 'reselect';
 import {push} from 'react-router-redux';
-export const getIdParam = createSelector(
+import {get} from 'lodash';
+
+const parameterizeURL = createSelector(
 	[
 		(state)=>state.routing.locationBeforeTransitions.pathname
 	],
 	(pathName)=>{
-		return pathName.split('/').reduce((id, partialPath)=>{
+		const ids = pathName.split('/').reduce((ids, partialPath)=>{
 			if(partialPath && !isNaN(partialPath)){
-				return partialPath
+				ids.push(partialPath)
 			}
-			return id;
-		}, null)
+			return ids
+		}, []);
+		return ids;
 	}
 );
+
+export const getIdParam = (i: number) => {
+	return createSelector(
+		[
+			parameterizeURL
+		],
+		(ids)=>ids[i]
+	);
+};
 
 export function queryPush(nextQuery: Object){
 	return (dispatch: Function, getState: Function)=>{
@@ -37,4 +49,8 @@ export function locationPush(nextLocation: string){
 			})
 		);
 	}
+}
+
+export function getQuery(name: string) : Function {
+	return (state)=>get(state, `routing.locationBeforeTransitions.query.${name}`);
 }

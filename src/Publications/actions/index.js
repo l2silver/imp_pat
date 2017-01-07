@@ -8,8 +8,11 @@ export function create(){
 			[createMessage('publications', {})]
 		)
 		.then((response)=>{
-			const [[{entity: {id}}]] = response;
-			dispatch(locationPush(`/publications/${id}/edit`))
+			const [[{entity}]] = response;
+			const {id} = entity;
+			const {folder: {sections}} = entity;
+			const [{id: sectionId}] = sections;
+			dispatch(locationPush(`/publications/${id}/edit/sections/${sectionId}`))
 		})
 	}
 }

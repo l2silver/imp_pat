@@ -1,10 +1,10 @@
 //@flow
-import React, {PureComponent, PropTypes} from 'react';
+import React, {PureComponent} from 'react';
 import {Map} from 'immutable';
 import {TextInput} from '../TextInput';
 import {shallowToJS} from '../../utils/formUtils';
 
-class LinkedTextInput extends PureComponent {
+export class LinkedTextInput extends PureComponent {
 	props: {
 		field: Map<string, any>
 	}
@@ -16,5 +16,3 @@ class LinkedTextInput extends PureComponent {
 	}
 
 }
-
-export {LinkedTextInput}

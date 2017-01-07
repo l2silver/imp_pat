@@ -5,8 +5,8 @@ import {bindMethods} from '../../utils/classUtils';
 
 type $propTypes = {
 	name: string;
-	label: string;
-	errors: Map<string, string>;
+	label?: string;
+	errors?: Map<string, string>;
 	onChange: ()=>void;
 	multi?: boolean;
 };
