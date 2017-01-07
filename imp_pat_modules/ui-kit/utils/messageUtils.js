@@ -6,7 +6,10 @@ import {baseRestConstants} from './constantUtils';
 import {decamelizeKeys, camelizeKeys} from 'humps';
 import pluralize from 'pluralize';
 import {debounce} from 'lodash';
-const url = 'http://localhost:8080';
+
+
+
+const url = process.env.ENV_VARIABLE === 'production' ? 'http://138.197.144.24:8080' : 'http://localhost:8080';
 
 const {BASE_REST, CREATE, UPDATE, DELETE, GET, INDEX, LINK, REORDER} = baseRestConstants;
 
