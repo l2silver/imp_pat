@@ -1,5 +1,5 @@
 {
-  "name": "react-transform-boilerplate",
+  "name": "imp_pat_client",
   "version": "1.0.0",
   "description": "A new Webpack boilerplate with hot reloading React components, and error handling on module and component level.",
   "scripts": {
@@ -12,26 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaearon/react-transform-boilerplate.git"
+    "url": "https://github.com/l2silver/imp_pat.git"
   },
   "keywords": [
-    "react",
-    "reactjs",
-    "boilerplate",
-    "hot",
-    "reload",
-    "hmr",
-    "live",
-    "edit",
-    "webpack",
-    "babel",
-    "react-transform"
+    "imp_pat"
   ],
-  "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
+  "author": "Leigh Silverstein",
   "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/gaearon/react-transform-boilerplate/issues"
-  },
+  
   "homepage": "https://github.com/gaearon/react-transform-boilerplate",
   "devDependencies": {
     "axios": "^0.15.2",
