@@ -13,7 +13,7 @@ import {ul} from './style.pcss';
 
 class ContentsFolder extends PureComponent {
 	render(){
-		const {root, sectionIds, folderIds, folder, connectDragSource, connectDropTarget} = this.props;
+		const {root, sectionIds, folderIds, folder, connectDragSource, connectDropTarget, readonly} = this.props;
 		return <li>
 			{
 				!root && connectDragSource(connectDropTarget(<div>
@@ -21,11 +21,11 @@ class ContentsFolder extends PureComponent {
 				</div>))
 			}
 			{
-				<ul className={ul}>{sectionIds.toArray().map((sectionId, i)=><ContentsSection key={`contents-folder-${sectionId}`} sectionId={sectionId} parentId={folder.get('id')} index={i} />)}</ul>
+				<ul className={ul}>{sectionIds.toArray().map((sectionId, i)=><ContentsSection key={`contents-folder-${sectionId}`} readonly={readonly} sectionId={sectionId} parentId={folder.get('id')} index={i} />)}</ul>
 			}
 			{
 				<ul className={ul}>{folderIds.toArray().map((folderId, i)=>{
-					return <ConnectedContentsFolder key={`contents-folder-${folderId}`} folderId={folderId} parentId={folder.get('id')} index={i} />
+					return <ConnectedContentsFolder key={`contents-folder-${folderId}`} readonly={readonly} folderId={folderId} parentId={folder.get('id')} index={i} />
 				})}</ul>
 			}
 		</li>
@@ -60,6 +60,9 @@ const folderSource = {
 		return {
 			id: folderId,
 		};
+	},
+	canDrag(props){
+		return !props.readonly
 	}
 };
 
@@ -69,7 +72,7 @@ const ConnectedContentsFolder = connect(mapStateToProps, mapDispatchToProps)(flo
 	DropTarget(getType, folderTarget, (connect, monitor) => ({
 		connectDropTarget: connect.dropTarget(),
 		isOver: monitor.isOver(),
-		canDrop: monitor.canDrop()
+		canDrop: monitor.canDrop(),
 	})),
 	DragSource(getType, folderSource, (connect, monitor) => ({
 		connectDragSource: connect.dragSource(),

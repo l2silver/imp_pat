@@ -1,14 +1,13 @@
 //@flow
 import {types as perspectiveTypes} from '../models/perspectives';
-export const schemaTypes = {
-	ONE:  1,
-	MANY: 2,
-};
+import {pullRequestRelationshipSchemas} from '../models/pullRequests'
+import {schemaTypes} from './constantUtils';
 
 const {ONE} = schemaTypes;
 
 export const fullSchema = {
 	relationshipsSchema:{
+		...pullRequestRelationshipSchemas,
 		mainFeed: [
 			{
 				name: 'publishedPublications',
@@ -66,8 +65,21 @@ export const fullSchema = {
 				alias: 'folder',
 				type: ONE,
 			},
+			{
+				name: 'pullRequests',
+				alias: 'notAcceptedPullRequest',
+				type: ONE,
+			}
 		],
 		publishedPublications: [
+			{
+				name: 'publishedPublications',
+				alias: 'originalId',
+				type: ONE,
+				inverse: true,
+				inverseAlias: 'originalId',
+				justRelationship: true,
+			},
 			{
 				name: 'publishedFolders',
 				alias: 'folder',
@@ -96,6 +108,14 @@ export const fullSchema = {
 		publishedFolders: [
 			{
 				name: 'publishedFolders',
+				alias: 'originalId',
+				type: ONE,
+				inverse: true,
+				inverseAlias: 'originalId',
+				justRelationship: true,
+			},
+			{
+				name: 'publishedFolders',
 				alias: 'folders'
 			},
 			{
@@ -107,6 +127,14 @@ export const fullSchema = {
 			}
 		],
 		publishedSections: [
+			{
+				name: 'publishedSections',
+				alias: 'originalId',
+				type: ONE,
+				inverse: true,
+				inverseAlias: 'originalId',
+				justRelationship: true,
+			},
 			{
 				name: 'likes',
 				alias: 'like',
@@ -162,22 +190,22 @@ export const fullSchema = {
 		]
 	},
 	entitiesSchema: {
+		/* eslint-disable */
 		users({password, session, ...user}: Object){
 			return user;
 		},
-		publications({folder: f, ...folder}: Object){
-			return folder;
+		publications({folder, ...pub}: Object){
+			return pub;
 		},
 		folders({folders, ...folder}: Object){
 			return folder;
 		},
 		sessions({user, ...session}: Object){
 			return session;
-		}	
+		}
+		/* eslint-enable */
 	},
-	inverseRelationshipsSchema: {
-
-	}
+	inverseRelationshipsSchema: {}
 };
 
 const {relationshipsSchema, inverseRelationshipsSchema} = fullSchema;

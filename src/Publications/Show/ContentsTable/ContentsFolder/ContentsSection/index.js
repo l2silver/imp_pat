@@ -26,11 +26,10 @@ const mapStateToProps = createStructuredSelector({
 	publicationId: getIdParam(0),
 })
 
-function mapDispatchToProps(dispatch, {sectionId, folderId}){
+function mapDispatchToProps(dispatch, {sectionId, folderId, pullRequestReview}){
 	return {
 		goToSection(publicationId){
-
-			dispatch(locationPush(`/publications/${publicationId}/folders/${folderId}/sections/${sectionId}`))
+			dispatch(locationPush(`/publications/${publicationId}${pullRequestReview ? '/pullRequestReview' : ''}/folders/${folderId}/sections/${sectionId}`))
 		},
 	};
 }

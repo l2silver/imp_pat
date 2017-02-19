@@ -14,7 +14,6 @@ import {ul} from './style.pcss';
 class ContentsTable extends PureComponent {
 	render(){
 		const {folderId, publication} = this.props;
-		console.log('folderId', folderId)
 		return <div>
 			<ul className={ul}>
 				<ContentsFolder folderId={folderId} name={publication.get('title')} />

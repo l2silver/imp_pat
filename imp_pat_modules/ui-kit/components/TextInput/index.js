@@ -21,13 +21,13 @@ class TextInput extends PureComponent {
 		return this.generateContent(this.props);
 	}
 	generateContent(combinedProps: $propTypes){
-		const {label, errors, onChange, multi, ...props} = combinedProps
+		const {label, errors, onChange, multi, readonly, ...props} = combinedProps
 		return <div>
 			{label && <label>{label}</label>}
 			{multi ? 
-				<textarea className='form-control' onChange={this.onChange.bind(null, props.name, onChange)} {...props} /> 
+				<textarea disabled={readonly} className='form-control' onChange={this.onChange.bind(null, props.name, onChange)} {...props} /> 
 				:
-				<input type='text' className='form-control' onChange={this.onChange.bind(null, props.name, onChange)} {...props} /> 
+				<input disabled={readonly} type='text' className='form-control' onChange={this.onChange.bind(null, props.name, onChange)} {...props} /> 
 			}
 			{errors && errors.size > 0 && <span className='label label-danger'>{errors.first()}</span>}
 		</div>	

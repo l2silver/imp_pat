@@ -4,7 +4,7 @@ import { DropTarget, DragSource } from 'react-dnd';
 import classnames from 'classnames';
 import {flow} from 'lodash'
 import {Map} from 'immutable'
-import {Button} from '@imp_pat/ui-kit/components';
+import {Button, Icon} from '@imp_pat/ui-kit/components';
 
 import {SECTION} from './dndTypes';
 import {caret, droppable, textInput} from './style.pcss';
@@ -22,21 +22,25 @@ class FolderSelf extends PureComponent {
 			createSection,
 			folder,
 			isOver,
-			canDrop
+			canDrop,
+			readonly
 		} = this.props;
 		const klass = classnames({[droppable]: isOver && canDrop})
 		return connectDragSource(connectDropTarget(
-			clicked ? <div className={klass}>
+			(!readonly && clicked) ? <div className={klass}>
 				<Button iconName='trash' onClick={deleteFolder} confirmationMessage='Are you sure you want to delete this folder?' />
 				<Button iconName='plus' onClick={createFolder} />
 				<Button iconName='plus-square' onClick={createSection} />
 				<Button iconName='cog' onClick={()=>{interact({clicked: false})}}/>	
 			</div> :
 			<div className={klass}>
-				<Button iconName='cog'  onClick={()=>{interact({clicked: true})}}/>
-				<Button iconName='folder' />
+				{
+					!readonly ? <Button iconName='cog'  onClick={()=>{interact({clicked: true})}}/> :
+					<Icon name='eye' />
+				}
+				<Icon name='folder' />
 				<Button iconName={`caret-${open ? 'down' : 'right'}`} onClick={()=>interact({open: !open})} className={caret} />
-				<input className={textInput} type='text' value={folder.get('name')} placeholder='Untitled' onChange={update}/>
+				<input  disabled={readonly} className={textInput} type='text' value={folder.get('name')} placeholder='Untitled' onChange={update}/>
 			</div>
 		))
 	}
@@ -58,6 +62,9 @@ const sectionSource = {
 			entity: Map({id: folderId}),
 			name: 'folders', 
 		};
+	},
+	canDrag({readonly}){
+		return !readonly
 	}
 };
 

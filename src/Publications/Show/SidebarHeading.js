@@ -3,7 +3,7 @@ import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 
-import {Icon} from '@imp_pat/ui-kit/components';
+import {Button, Icon} from '@imp_pat/ui-kit/components';
 
 import {sendMessageOneTime} from '@imp_pat/ui-kit/utils/classUtils';
 import {locationPush, queryPush} from '@imp_pat/ui-kit/utils/routerUtils';
@@ -11,6 +11,7 @@ import {findEntity, getRelatedEntityIds} from '@imp_pat/ui-kit/utils/selectorUti
 
 import {getName} from '@imp_pat/ui-kit/models/users';
 import {isLoggedIn} from '@imp_pat/ui-kit/models/sessions';
+import * as perspectiveModel from '@imp_pat/ui-kit/models/perspectives';
 
 import {location as yourUserLocation} from '../YourPublications/routes';
 import * as actions from './actions';
@@ -28,7 +29,22 @@ const getUser = sendMessageOneTime(
 
 class SidebarHeading extends PureComponent {
 	render(){
-		const {userId, goToUser, publication, goToContentsTable, createStar, starId, followId, removeStar, user, createFollow, removeFollow, loggedIn} = this.props;
+		const {
+			userId,
+			goToUser,
+			publication,
+			goToContentsTable,
+			createStar,
+			starId,
+			followId,
+			removeStar,
+			user,
+			createFollow,
+			removeFollow,
+			loggedIn,
+			goToPerspectiveIndex,
+			forkPublication,
+		} = this.props;
 		const publicationTitle = publication.get('title');
 		const publicationSubtitle = publication.get('subtitle');
 		const starIcon = !!starId ? 
@@ -46,6 +62,8 @@ class SidebarHeading extends PureComponent {
 				<p onClick={()=>goToUser(userId)}>{getName(user)}</p>
 				{followIcon}
 			</div>
+			<Button iconName='code-fork' onClick={forkPublication}/>
+			<Button iconName='comment' onClick={goToPerspectiveIndex}/>
 			<Icon name='list' onClick={goToContentsTable} />
 			<span>
 				{starIcon}
@@ -95,6 +113,12 @@ function mapDispatchToProps(dispatch, {publicationId}){
 		},
 		goToUser(id){
 			dispatch(queryPush({panelLocation: yourUserLocation, panelOpen: true, panelUserId: id}))
+		},
+		goToPerspectiveIndex(){
+			dispatch(perspectiveModel.goToIndex())
+		},
+		forkPublication(){
+			dispatch(actions.forkPublication(publicationId))
 		}
 	}
 }

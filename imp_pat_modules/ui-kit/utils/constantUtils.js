@@ -12,3 +12,8 @@ export const baseRestConstants = {
 	CUSTOM:    'custom',
 	
 };
+
+export const schemaTypes = {
+	ONE:  1,
+	MANY: 2,
+}

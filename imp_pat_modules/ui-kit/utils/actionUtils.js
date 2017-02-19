@@ -1,7 +1,8 @@
 //@flow
 import {Map, OrderedSet} from 'immutable';
 import {baseRestConstants} from './constantUtils';
-import {fullSchema, schemaTypes, findRelationshipsSchema} from './schemaUtils';
+import {fullSchema, findRelationshipsSchema} from './schemaUtils';
+import {schemaTypes} from './constantUtils';
 
 const {ONE} = schemaTypes;
 
@@ -154,12 +155,11 @@ function cleanEntity(name, entity, fullSchema, entities, relationships) {
 			if(!nextEntities[nextName]){
 				nextEntities[nextName] = relatedEntities;
 			}else{
-				nextEntities[nextName] = nextEntities[nextName].concat(relatedEntities);
+				nextEntities[nextName] = type === schemaTypes.ONE ? relatedEntities : nextEntities[nextName].concat(relatedEntities);
 			}
 			if(!relationships[name]){
 				relationships[name] = {};
 			}
-			
 			const relatedEntityIds = type === schemaTypes.ONE ? relatedEntities.id : relatedEntities.map(({id})=>id);
 			if(!relationships[name][finalName]){
 				relationships[name][finalName] = {};

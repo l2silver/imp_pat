@@ -13,7 +13,7 @@ import {container} from './style.pcss';
 
 class CascadingMenu extends PureComponent {
 	render(){
-		const {publication, folders, sections, interactions, interact, folderId, goToFolder, goToRootFolder} = this.props;
+		const {publication, folders, sections, interactions, interact, folderId, goToFolder, goToRootFolder, pullRequestReview} = this.props;
 		return <ul className={container}>	
 			<CascadingMenuFolder
 				folderId={folderId}
@@ -25,6 +25,7 @@ class CascadingMenu extends PureComponent {
 				goToFolder={goToFolder}
 				goToRootFolder={goToRootFolder}
 				publicationId={publication.get('id')}
+				pullRequestReview={pullRequestReview}
 			/>
 		</ul>
 	}
@@ -52,13 +53,14 @@ const mapStateToProps = createStructuredSelector({
 	interactionIdentity: folderId,
 });
 
-function mapDispatchToProps(dispatch: Function){
+function mapDispatchToProps(dispatch: Function, {pullRequestReview}){
+	const pullRequestReviewAddition = pullRequestReview ? '/pullRequestReview' : ''
 	return {
 		goToFolder(publicationId, folderId){
-			dispatch(locationPush(`/publications/${publicationId}/folders/${folderId}`))
+			dispatch(locationPush(`/publications/${publicationId}${pullRequestReviewAddition}/folders/${folderId}`))
 		},
 		goToRootFolder(publicationId){
-			dispatch(locationPush(`/publications/${publicationId}`))
+			dispatch(locationPush(`/publications/${publicationId}${pullRequestReviewAddition}`))
 		}
 	}
 }

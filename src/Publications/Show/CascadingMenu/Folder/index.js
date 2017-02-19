@@ -44,7 +44,7 @@ export default class CascadingMenuFolder extends PureComponent {
 	}
 	render(){
 		const {CascadingMenuFolder} = this;
-		const {goToRootFolder, folder, folders, sections, interactions, interact, folderId, goToFolder, publicationId} = this.props;
+		const {goToRootFolder, folder, folders, sections, interactions, interact, folderId, goToFolder, publicationId, pullRequestReview} = this.props;
 		const open = interactions.get('open');
 		return <li>
 			<div>
@@ -54,10 +54,10 @@ export default class CascadingMenuFolder extends PureComponent {
 			</div>
 			<ul className={classnames(container, {[hide]: !open})}>
 				{
-					sections.map(sectionId=><CascadingMenuSection sectionId={sectionId} folderId={folderId} key={`cascading-menu-section-${sectionId}`} />)
+					sections.map(sectionId=><CascadingMenuSection sectionId={sectionId} pullRequestReview={pullRequestReview} folderId={folderId} key={`cascading-menu-section-${sectionId}`} />)
 				}
 				{
-					folders.map(nextFolderId=><CascadingMenuFolder folderId={nextFolderId} parentId={folderId} key={`cascading-menu-folder-${nextFolderId}`}/>)
+					folders.map(nextFolderId=><CascadingMenuFolder folderId={nextFolderId} pullRequestReview={pullRequestReview} parentId={folderId} key={`cascading-menu-folder-${nextFolderId}`}/>)
 				}
 
 			</ul>

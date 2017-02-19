@@ -52,6 +52,9 @@ const sectionSource = {
 		return {
 			id: sectionId,
 		};
+	},
+	canDrag({readonly}){
+		return !readonly
 	}
 };
 

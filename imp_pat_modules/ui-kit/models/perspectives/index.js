@@ -15,29 +15,28 @@ export const indexLocation = 'indexPerspective'
 export const createLocation = 'createPerspective'
 export const showLocation = 'showPerspective'
 
-export function goToIndexPerspective(perspectiveEntityId: number, perspectiveType: number): Function{
+export function goToIndex(): Function{
 	return dispatch=>{
 		dispatch(queryPush({
 			panelOpen: true,
 			panelLocation: indexLocation,
-			perspectiveType,
-			perspectiveEntityId,
 		}))
 	}
 }
 
-export function goToCreatePerspective(perspectiveEntityId: number, perspectiveType: number): Function{
+export function goToCreate(perspectiveEntityId: number, perspectiveType: number, publicationId?: number): Function{
 	return dispatch=>{
 		dispatch(queryPush({
 			panelOpen: true,
 			panelLocation: createLocation,
 			perspectiveType,
 			perspectiveEntityId,
+			perspectiveFromPublication: publicationId,
 		}))
 	}
 }
 
-export function goToShowPerspective(perspectiveId: number): Function{
+export function goToShow(perspectiveId: number): Function{
 	return dispatch=>{
 		dispatch(queryPush({
 			panelOpen: true,

@@ -15,9 +15,11 @@ import {container} from './style.pcss';
 
 class CascadingMenu extends PureComponent {
 	render(){
-		const {publication, folderId, folders, sections, interactions, interact, dispatch, editing} = this.props;
+		const {publication, folderId, folders, sections, interactions, interact, dispatch, editing, pullRequest} = this.props;
+		const readonly = pullRequest.get('active')
 		return <ul className={container}>	
 			<CascadingMenuFolder
+				readonly={readonly}
 				editing={editing}
 				connectDropTarget={(any)=>any}
 				folderId={folderId}
@@ -66,6 +68,8 @@ const folderId = getRelatedEntityIds(getPublicationId, 'publications', 'folder')
 const folder = findEntity(folderId, 'folders');
 const folders = getRelatedEntityIds(folderId, 'folders', 'folders');
 const sections = getRelatedEntityIds(folderId, 'folders', 'sections');
+const getPullRequestId = getRelatedEntityIds(getPublicationId, 'publications', 'notAcceptedPullRequest');
+const pullRequest = findEntity(getPullRequestId, 'pullRequests');
 
 const mapStateToProps = createStructuredSelector({
 	publication,
@@ -73,6 +77,7 @@ const mapStateToProps = createStructuredSelector({
 	folders,
 	sections,
 	folderId,
+	pullRequest,
 	interactionIdentity: folderId,
 });
 

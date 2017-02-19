@@ -82,7 +82,7 @@ export default class CascadingMenuFolder extends PureComponent {
 	}
 	render(){
 		const {CascadingMenuFolder} = this;
-		const {folder, folders, sections, interactions, interact, createFolder, createSection, update, deleteFolder, onDrop, folderId, canDrop, parentId} = this.props;
+		const {folder, folders, sections, interactions, interact, createFolder, createSection, update, deleteFolder, onDrop, folderId, canDrop, parentId, readonly} = this.props;
 		const open = interactions.get('open');
 		const clicked = !!interactions.get('clicked');
 		return <li>
@@ -99,15 +99,16 @@ export default class CascadingMenuFolder extends PureComponent {
 					onDrop,
 					canDrop,
 					folderId,
-					parentId
+					parentId,
+					readonly,
 				}}
 			/>
 			<ul className={classnames(container, {[hide]: !open})}>
 				{
-					sections.map(sectionId=><CascadingMenuSection sectionId={sectionId} folderId={folderId} key={`cascading-menu-section-${sectionId}`} />)
+					sections.map(sectionId=><CascadingMenuSection sectionId={sectionId} readonly={readonly} folderId={folderId} key={`cascading-menu-section-${sectionId}`} />)
 				}
 				{
-					folders.map(nextFolderId=><CascadingMenuFolder folderId={nextFolderId} parentId={folderId} key={`cascading-menu-folder-${nextFolderId}`}/>)
+					folders.map(nextFolderId=><CascadingMenuFolder folderId={nextFolderId} readonly={readonly} parentId={folderId} key={`cascading-menu-folder-${nextFolderId}`}/>)
 				}
 			</ul>
 		</li>

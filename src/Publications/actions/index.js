@@ -1,11 +1,16 @@
 //@flow
-import {createMessage, sendMessages} from '@imp_pat/ui-kit/utils/messageUtils';
+import {createChildMessage, sendMessages} from '@imp_pat/ui-kit/utils/messageUtils';
 import {locationPush} from '@imp_pat/ui-kit/utils/routerUtils';
-export function create(){
+
+export function create(userId: number){
 	return (dispatch: Function) => {
 		sendMessages(
 			dispatch,
-			[createMessage('publications', {})]
+			[createChildMessage('publications', {}, {
+				parentName: 'users',
+				parentId: userId,
+				alias: 'myPublications',
+			})]
 		)
 		.then((response)=>{
 			const [[{entity}]] = response;

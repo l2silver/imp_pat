@@ -1,7 +1,8 @@
 //@flow
 import {Map, List} from 'immutable';
 import {createSelector} from 'reselect';
-import {fullSchema, schemaTypes} from './schemaUtils';
+import {fullSchema} from './schemaUtils';
+import {schemaTypes} from './constantUtils';
 
 const {relationshipsSchema} = fullSchema
 export function getEntity(entityName: string){
@@ -44,10 +45,9 @@ export function getRelatedEntityIds(idSelector: Function, entityName: string, re
 	return createSelector(
 		[
 			idSelector,
-			getEntity(relationship.name),
 			getRelationship(entityName, relationship.alias || relationship.name),
 		],
-		(entityId, relatedEntity, relationshipToEntity)=>{
+		(entityId, relationshipToEntity)=>{
 			if(relationship.type === schemaTypes.ONE){
 				return relationshipToEntity.get(`${entityId}`);
 			}
@@ -63,7 +63,7 @@ export function findEntity(idSelector: Function, entityName: string){
 			getEntity(entityName),
 		],
 		(id, entity)=>{
-			return entity.get(`${id}`, new Map())
+			return entity.get(`${id}`) || new Map()
 		}
 	)
 }

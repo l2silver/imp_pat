@@ -1,6 +1,8 @@
 var path = require('path');
 var webpack = require('webpack');
 var rucksack = require('rucksack-css');
+var CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+
 module.exports = {
   // or devtool: 'eval' to debug issues with compiled output:
   devtool: 'eval',
@@ -30,6 +32,7 @@ module.exports = {
         $: 'jquery',
         jquery: 'jquery'
     }),
+    new CaseSensitivePathsPlugin()
   ],
   module: {
     loaders: [

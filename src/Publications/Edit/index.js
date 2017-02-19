@@ -8,6 +8,8 @@ import {Container, BaseRest, Icon} from '@imp_pat/ui-kit/components';
 import {getMessage} from '@imp_pat/ui-kit/utils/messageUtils';
 import {bindMethods} from '@imp_pat/ui-kit/utils/classUtils';
 import {getIdParam, queryPush, locationPush} from '@imp_pat/ui-kit/utils/routerUtils';
+import {getRelatedEntityIds} from '@imp_pat/ui-kit/utils/selectorUtils';
+import {outgoingId, outgoingTableName, showOutgoingLocation} from '@imp_pat/ui-kit/models/pullRequests';
 
 import {SIDEBAR} from './types';
 import {container, sidebar, mainContent} from './style.pcss';
@@ -15,17 +17,20 @@ import CascadingMenu from './CascadingMenu';
 
 class EditPublication extends BaseRest {
 	constructor(props, context){
-		super(props, context);
+		super(props, context)
 		bindMethods(this, 'baseRestMessages')
 	}
 	render(){
-		const {publicationId, dispatch, connectDropTarget} = this.props;
+		const {publicationId, dispatch, connectDropTarget, notAcceptedPullRequestId, goToPullRequest} = this.props;
 		return <Container>
 			{
 				connectDropTarget(<div className={container}>
 					<div className={sidebar}>
 						<Icon name='cog' onClick={()=>dispatch(queryPush({panelLocation: 'publicationSettings', panelOpen: true, panelPublicationId: publicationId}))} />
 						<Icon name='list' onClick={()=>dispatch(locationPush(`/publications/${publicationId}/edit`))} />
+						{
+							notAcceptedPullRequestId &&	<Icon name='plug' onClick={()=>goToPullRequest(notAcceptedPullRequestId)} />
+						}
 						<CascadingMenu editing />
 					</div>
 					<div />
@@ -37,13 +42,32 @@ class EditPublication extends BaseRest {
 		</Container>
 	}
 	baseRestMessages(){
-		return [getMessage('publications', {id: this.props.publicationId})];
+		return [
+			getMessage('publications', {id: this.props.publicationId}, {serviceName: 'pullRequests', serviceRestType: 'findNotAcceptedByClone'}),
+			getMessage('publications', {id: this.props.publicationId}),
+		];
 	}
 }
 
+const getPublicationId = getIdParam(0)
+
 const mapStateToProps = createStructuredSelector({
-	publicationId: getIdParam(0),
+	publicationId: getPublicationId,
+	notAcceptedPullRequestId: getRelatedEntityIds(getPublicationId, 'publications', 'notAcceptedPullRequest')
 });
+
+function mapDispatchToProps(dispatch){
+	return {
+		goToPullRequest(pullRequestId){
+			dispatch(queryPush({
+				panelLocation: showOutgoingLocation,
+				panelOpen: true,
+				pullRequestId,
+			}));
+		},
+		dispatch
+	}
+}
 
 const sidebarTarget = {
   drop(props, monitor, component) {
@@ -59,4 +83,6 @@ const sidebarTarget = {
 const DroppableEditPublication = DropTarget(SIDEBAR, sidebarTarget, connect => ({
   connectDropTarget: connect.dropTarget()
 }))(EditPublication)
-export default connect(mapStateToProps)(DroppableEditPublication);
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(DroppableEditPublication);

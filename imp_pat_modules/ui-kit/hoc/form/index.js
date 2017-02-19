@@ -94,7 +94,7 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 			};
 		}
 		render(){
-			return <WrappedComponent fields={this.state.fields} actions={this.actions} isValid={this.state.isValid}/>
+			return <WrappedComponent {...this.props} fields={this.state.fields} actions={this.actions} isValid={this.state.isValid} />
 		}
 		getField(fieldName: string){
 			return this.state.fields.get(fieldName);
@@ -149,7 +149,6 @@ export function form({fields, actions, onChange, config}: *, WrappedComponent: *
 		}
 
 		handleErrors(errors: Object){
-			console.log('errors', errors);
 			const nextFields = Object.keys(errors).reduce((fields, key)=>{
 				return fields.updateIn([key, 'errors'], (errorsList)=>{
 					if(errorsList){

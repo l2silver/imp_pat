@@ -11,8 +11,6 @@ export const statusTypes  = {
 	published: 2,
 }
 
-
-
 export function goToPublication(id: number): Function{
 	return dispatch=>{
 		dispatch(locationPush(`/publications/${id}`))

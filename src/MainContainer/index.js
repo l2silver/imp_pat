@@ -11,6 +11,7 @@ import {getRelatedEntity} from '@imp_pat/ui-kit/utils/selectorUtils'
 import {bindMethods} from '@imp_pat/ui-kit/utils/classUtils';
 
 import {currentSessionId} from '@imp_pat/ui-kit/models/sessions';
+import {incomingLocation, outgoingLocation} from '@imp_pat/ui-kit/models/pullRequests';
 
 import PanelContainer from '../PanelContainer';
 import {location as loginLocation} from '../LoginPanel/routes';
@@ -22,6 +23,7 @@ import {location as followersLocation} from '../FollowersPanel/routes';
 import {location as myPublicationsLocation} from '../Publications/MyPublications/routes';
 
 
+
 import {create as createPublication} from '../Publications/actions';
 import {logout, search} from './actions';
 
@@ -31,7 +33,22 @@ class MainContainer extends BaseRest {
 		bindMethods(this, 'baseRestMessages')
 	}
 	render(){
-		const {goToFollowersPanel, goToFollowingPanel, onStars, goHome, onSignup, onLogin, onCreatePublication, user, onLogout, onMyPublications, onSearch, onClickSearch} = this.props;
+		const {
+			goToFollowersPanel,
+			goToFollowingPanel,
+			onStars,
+			goHome,
+			onSignup,
+			onLogin,
+			onCreatePublication,
+			user,
+			onLogout,
+			onMyPublications,
+			onSearch,
+			onClickSearch,
+			goToIncomingPullRequestsPanel,
+			goToOutgoingPullRequestsPanel,
+		} = this.props;
 		const loggedIn = user.size > 0;
 		return <Container>
 			<Container menubar>
@@ -68,20 +85,31 @@ class MainContainer extends BaseRest {
 					{
 						loggedIn && 	<MainNavDropdown title='Publications'>
 								{
-									loggedIn && <MainNavDropdownItem>
-										<div onClick={onCreatePublication}>Create</div>
+									<MainNavDropdownItem>
+										<div onClick={()=>onCreatePublication(user.get('id'))}>Create</div>
 									</MainNavDropdownItem>
 								}
 								{
-									loggedIn && <MainNavDropdownItem>
+									<MainNavDropdownItem>
 										<div onClick={onMyPublications}>My</div>
 									</MainNavDropdownItem>
 								}
 								{
-									loggedIn && <MainNavDropdownItem>
+									<MainNavDropdownItem>
 										<div onClick={onStars}>Starred</div>
 									</MainNavDropdownItem>
 								}
+						</MainNavDropdown>
+
+					}
+					{
+						loggedIn && 	<MainNavDropdown title='Pull Requests'>
+							<MainNavDropdownItem>
+								<div onClick={goToIncomingPullRequestsPanel}>Incoming</div>
+							</MainNavDropdownItem>
+							<MainNavDropdownItem>
+								<div onClick={goToOutgoingPullRequestsPanel}>Outgoing</div>
+							</MainNavDropdownItem>
 						</MainNavDropdown>
 
 					}
@@ -170,6 +198,22 @@ function mapDispatchToProps(dispatch){
 					panelOpen: true,
 				})
 			);
+		},
+		goToIncomingPullRequestsPanel(){
+			dispatch(
+				queryPush({
+					panelLocation: incomingLocation,
+					panelOpen: true,
+				})
+			)
+		},
+		goToOutgoingPullRequestsPanel(){
+			dispatch(
+				queryPush({
+					panelLocation: outgoingLocation,
+					panelOpen: true,
+				})
+			)
 		},
 	}
 }

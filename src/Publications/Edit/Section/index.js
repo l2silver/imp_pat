@@ -3,10 +3,11 @@
 import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
+import ReactMarkdown from 'react-markdown';
 
 import {CodeMirror} from '@imp_pat/ui-kit/components';
 import {getIdParam} from '@imp_pat/ui-kit/utils/routerUtils';
-import {findEntity} from '@imp_pat/ui-kit/utils/selectorUtils';
+import {findEntity, getRelatedEntityIds} from '@imp_pat/ui-kit/utils/selectorUtils';
 
 import './style.pcss'
 
@@ -14,7 +15,11 @@ import {update} from './actions';
 
 class EditSection extends PureComponent {
 	render(){
-		const {section, handleChange} = this.props;
+		const {section, handleChange, pullRequest} = this.props;
+		const readonly = pullRequest.get('active');
+		if(readonly){
+			return <ReactMarkdown source={section.get('content')} />
+		}
 		return section.get('id') ? <CodeMirror
 					name={'content'}
 					value={section.get('content')}
@@ -33,8 +38,11 @@ function mapDispatchToProps(dispatch){
 }
 
 const getSectionId = getIdParam(2);
+const getPublicationId = getIdParam(0);
+const getPullRequestId = getRelatedEntityIds(getPublicationId, 'publications', 'notAcceptedPullRequest')
 
 const mapStateToProps = createStructuredSelector({
 	section: findEntity(getSectionId, 'sections'),
+	pullRequest: findEntity(getPullRequestId, 'pullRequests')
 })
 export default connect(mapStateToProps, mapDispatchToProps)(EditSection);

@@ -15,12 +15,12 @@ import * as actions from './actions';
 
 class CascadingMenuSection extends PureComponent {
 	render(){
-		const {section, deleteSection, updateSection, connectDragSource, goToSection, publicationId} = this.props;
+		const {section, deleteSection, updateSection, connectDragSource, goToSection, publicationId, readonly} = this.props;
 		return connectDragSource(<li>	
 			<Icon name='file-text-o' />
 			<Button onClick={()=>goToSection(publicationId)} iconName='arrow-right' />
-			<input className={textInput} type='text' onChange={updateSection} value={section.get('name')} placeholder='Untitled' />
-			<Button onClick={deleteSection} iconName='trash' confirmationMessage='Are you sure you want to delete this section?'/>
+			<input disabled={readonly} className={textInput} type='text' onChange={updateSection} value={section.get('name')} placeholder='Untitled' />
+			{!readonly && <Button onClick={deleteSection} iconName='trash' confirmationMessage='Are you sure you want to delete this section?'/>}
 		</li>);
 	}
 }
@@ -57,6 +57,9 @@ const sectionSource = {
 			entity: section,
 			name: 'sections', 
 		};
+	},
+	canDrag({readonly}){
+		return !readonly
 	}
 };
 

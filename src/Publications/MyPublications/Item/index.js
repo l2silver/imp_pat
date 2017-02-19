@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 
+import {Icon} from '@imp_pat/ui-kit/components';
 import {findEntity} from '@imp_pat/ui-kit/utils/selectorUtils';
 import {locationPush} from '@imp_pat/ui-kit/utils/routerUtils';
 
@@ -10,6 +11,7 @@ class MyPublicationsItem extends PureComponent {
 		const {publication, goTo} = this.props;
 		return <li onClick={goTo}>
 			{publication.get('title')}
+			{publication.get('forked') && <Icon name='code-fork'/>}
 		</li>
 	}
 }
